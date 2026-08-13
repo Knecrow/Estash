@@ -83,7 +83,8 @@ class SliverOneUIHeader extends StatelessWidget {
               bottomRight: Radius.circular(32),
             ),
           ),
-          padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 56.0, bottom: 20.0),
+          // Shifted padding upward to prevent bottom of the balance pill from getting cut off during app bar collapse
+          padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 44.0, bottom: 32.0),
           child: SingleChildScrollView(
             physics: const NeverScrollableScrollPhysics(),
             child: Column(
@@ -123,7 +124,7 @@ class SliverOneUIHeader extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 // Title
                 Text(
                   'Estash',
@@ -134,7 +135,7 @@ class SliverOneUIHeader extends StatelessWidget {
                     letterSpacing: -1.0,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 // Fully pill-like balance card container
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
