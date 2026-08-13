@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
-import '../../../../core/utils/currency_formatter.dart';
 import '../../../../data/models/category.dart';
 
 class SpendingRadarChart extends StatelessWidget {
@@ -69,7 +68,6 @@ class SpendingRadarChart extends StatelessWidget {
               categoryTotals: categoryTotals,
               maxSpend: safeMax,
               animProgress: animValue,
-              currencySymbol: currencySymbol,
             ),
           );
         },
@@ -83,14 +81,12 @@ class _RadarChartPainter extends CustomPainter {
   final Map<TransactionCategory, double> categoryTotals;
   final double maxSpend;
   final double animProgress;
-  final String currencySymbol;
 
   _RadarChartPainter({
     required this.categories,
     required this.categoryTotals,
     required this.maxSpend,
     required this.animProgress,
-    required this.currencySymbol,
   });
 
   @override
@@ -138,13 +134,11 @@ class _RadarChartPainter extends CustomPainter {
 
     // Compute Animated Polygon Points
     final dataPath = Path();
-    final dataPoints = <Offset>[];
 
     for (int i = 0; i < numSides; i++) {
       final cat = categories[i];
       final spend = categoryTotals[cat] ?? 0.0;
       final rawRatio = maxSpend > 0 ? (spend / maxSpend) : 0.0;
-      // Smooth minimum radius so polygon vertices are clear
       final ratio = spend > 0 ? (0.15 + 0.85 * rawRatio) * animProgress : 0.05 * animProgress;
       final pointRadius = radius * ratio;
 
@@ -152,7 +146,6 @@ class _RadarChartPainter extends CustomPainter {
       final x = center.dx + pointRadius * math.cos(angle);
       final y = center.dy + pointRadius * math.sin(angle);
       final pt = Offset(x, y);
-      dataPoints.add(pt);
 
       if (i == 0) {
         dataPath.moveTo(pt.dx, pt.dy);
@@ -177,49 +170,24 @@ class _RadarChartPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(dataPath, strokePaint);
 
-    // Draw Data Point Bullets
-    final pointFillPaint = Paint()
-      ..color = AppColors.safeAccent
-      ..style = PaintingStyle.fill;
-
-    final pointBorderPaint = Paint()
-      ..color = AppColors.actionDark
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    for (int i = 0; i < numSides; i++) {
-      final cat = categories[i];
-      final spend = categoryTotals[cat] ?? 0.0;
-      if (spend > 0) {
-        final pt = dataPoints[i];
-        canvas.drawCircle(pt, 5.0, pointFillPaint);
-        canvas.drawCircle(pt, 5.0, pointBorderPaint);
-      }
-    }
-
-    // Draw Labels & Values around Spokes
+    // Draw Category Spoke Labels Only (No Numbers, No Dots)
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
     for (int i = 0; i < numSides; i++) {
       final cat = categories[i];
       final spend = categoryTotals[cat] ?? 0.0;
       final angle = i * angleStep - math.pi / 2;
-      final labelRadius = radius + 22;
+      final labelRadius = radius + 20;
 
       final lx = center.dx + labelRadius * math.cos(angle);
       final ly = center.dy + labelRadius * math.sin(angle);
 
-      final labelText = spend > 0
-          ? '${cat.label}\n${CurrencyFormatter.format(spend, symbol: currencySymbol)}'
-          : cat.label;
-
       textPainter.text = TextSpan(
-        text: labelText,
+        text: cat.label,
         style: TextStyle(
           color: spend > 0 ? AppColors.textPrimary : AppColors.textSecondary,
-          fontSize: 10.0,
+          fontSize: 11.0,
           fontWeight: spend > 0 ? FontWeight.bold : FontWeight.w500,
-          height: 1.15,
         ),
       );
       textPainter.textAlign = TextAlign.center;
