@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -16,6 +18,48 @@ import 'widgets/threshold_slider_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  static const String _githubUrl = 'https://github.com/Knecrow/Estash';
+  static const String _creatorName = 'Knecrow';
+  static const String _appVersion = 'v1.0.0';
+
+  Future<void> _openGitHub(BuildContext context) async {
+    HapticUtils.light();
+    final uri = Uri.parse(_githubUrl);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        await Clipboard.setData(const ClipboardData(text: _githubUrl));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('GitHub link copied to clipboard!'),
+              backgroundColor: AppColors.cardSurface,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      await Clipboard.setData(const ClipboardData(text: _githubUrl));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('GitHub link copied to clipboard!'),
+            backgroundColor: AppColors.cardSurface,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   void _showNumberInputDialog(
     BuildContext context, {
@@ -118,7 +162,6 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  // Handle bar
                   Container(
                     width: 40,
                     height: 4,
@@ -137,7 +180,6 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  // Search Input
                   TextField(
                     onChanged: (q) => setState(() => searchQuery = q),
                     style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
@@ -155,7 +197,6 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // List of Currencies
                   Expanded(
                     child: ListView.separated(
                       itemCount: filteredItems.length,
@@ -419,6 +460,23 @@ class SettingsScreen extends StatelessWidget {
               title: 'Reset All Data',
               subtitle: 'Clear all transactions & reset settings',
               onTap: () => _showResetConfirmationDialog(context, finance, settings),
+            ),
+            const SettingsSectionHeader(title: 'About Estash'),
+            SettingsTile(
+              icon: Icons.code_rounded,
+              title: 'Creator',
+              subtitle: _creatorName,
+            ),
+            SettingsTile(
+              icon: Icons.open_in_new_rounded,
+              title: 'GitHub Repository',
+              subtitle: _githubUrl,
+              onTap: () => _openGitHub(context),
+            ),
+            SettingsTile(
+              icon: Icons.info_outline_rounded,
+              title: 'App Version',
+              subtitle: 'Estash $_appVersion',
             ),
             const SizedBox(height: 24),
           ],
