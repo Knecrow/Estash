@@ -145,143 +145,7 @@ class SettingsScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
       ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            String searchQuery = '';
-            final filteredItems = AppCurrencies.items.where((c) {
-              final query = searchQuery.toLowerCase();
-              return c.country.toLowerCase().contains(query) ||
-                  c.name.toLowerCase().contains(query) ||
-                  c.code.toLowerCase().contains(query) ||
-                  c.symbol.toLowerCase().contains(query);
-            }).toList();
-
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.75,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.cardSurfaceElevated,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Select Currency',
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 20,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  TextField(
-                    onChanged: (q) => setState(() => searchQuery = q),
-                    style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
-                    decoration: InputDecoration(
-                      hintText: 'Search by country or currency code...',
-                      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.safeAccent),
-                      filled: true,
-                      fillColor: AppColors.inputBackground,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: filteredItems.length,
-                      separatorBuilder: (_, __) => const Divider(color: Colors.transparent, height: 4),
-                      itemBuilder: (context, index) {
-                        final currency = filteredItems[index];
-                        final isSelected = settings.currencySymbol == currency.symbol;
-
-                        return InkWell(
-                          onTap: () {
-                            HapticUtils.selection();
-                            settings.setCurrencySymbol(currency.symbol);
-                            Navigator.pop(context);
-                          },
-                          borderRadius: BorderRadius.circular(14),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.safeAccent.withValues(alpha: 0.15)
-                                  : AppColors.inputBackground,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  currency.flag,
-                                  style: const TextStyle(fontSize: 24),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${currency.country} (${currency.code})',
-                                        style: AppTextStyles.bodyLarge.copyWith(
-                                          color: isSelected
-                                              ? AppColors.safeAccent
-                                              : AppColors.textPrimary,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        currency.name,
-                                        style: AppTextStyles.bodyMedium.copyWith(
-                                          color: AppColors.textSecondary,
-                                          fontSize: 12.5,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.cardSurface,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    currency.symbol,
-                                    style: AppTextStyles.titleLarge.copyWith(
-                                      color: isSelected
-                                          ? AppColors.safeAccent
-                                          : AppColors.textPrimary,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      builder: (context) => _CurrencyPickerSheetContent(settings: settings),
     );
   }
 
@@ -481,6 +345,154 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 24),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CurrencyPickerSheetContent extends StatefulWidget {
+  final SettingsProvider settings;
+
+  const _CurrencyPickerSheetContent({required this.settings});
+
+  @override
+  State<_CurrencyPickerSheetContent> createState() => _CurrencyPickerSheetContentState();
+}
+
+class _CurrencyPickerSheetContentState extends State<_CurrencyPickerSheetContent> {
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredItems = AppCurrencies.items.where((c) {
+      final query = _searchQuery.trim().toLowerCase();
+      if (query.isEmpty) return true;
+      return c.country.toLowerCase().contains(query) ||
+          c.name.toLowerCase().contains(query) ||
+          c.code.toLowerCase().contains(query) ||
+          c.symbol.toLowerCase().contains(query);
+    }).toList();
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75,
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.cardSurfaceElevated,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Select Currency',
+            style: AppTextStyles.titleLarge.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 20,
+            ),
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            onChanged: (q) => setState(() => _searchQuery = q),
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
+            decoration: InputDecoration(
+              hintText: 'Search by country or currency code...',
+              hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.safeAccent),
+              filled: true,
+              fillColor: AppColors.inputBackground,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: ListView.separated(
+              itemCount: filteredItems.length,
+              separatorBuilder: (_, __) => const Divider(color: Colors.transparent, height: 4),
+              itemBuilder: (context, index) {
+                final currency = filteredItems[index];
+                final isSelected = widget.settings.currencySymbol == currency.symbol;
+
+                return InkWell(
+                  onTap: () {
+                    HapticUtils.selection();
+                    widget.settings.setCurrencySymbol(currency.symbol);
+                    Navigator.pop(context);
+                  },
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.safeAccent.withValues(alpha: 0.15)
+                          : AppColors.inputBackground,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          currency.flag,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${currency.country} (${currency.code})',
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  color: isSelected
+                                      ? AppColors.safeAccent
+                                      : AppColors.textPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                currency.name,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardSurface,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            currency.symbol,
+                            style: AppTextStyles.titleLarge.copyWith(
+                              color: isSelected
+                                  ? AppColors.safeAccent
+                                  : AppColors.textPrimary,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
