@@ -12,7 +12,6 @@ import '../../core/utils/haptic_utils.dart';
 import '../../core/utils/notification_service.dart';
 import '../../providers/finance_provider.dart';
 import '../../providers/settings_provider.dart';
-import 'widgets/settings_section_header.dart';
 import 'widgets/settings_tile.dart';
 import 'widgets/threshold_slider_tile.dart';
 
@@ -243,8 +242,7 @@ class SettingsScreen extends StatelessWidget {
                 letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 8),
-            const SettingsSectionHeader(title: 'Spending Limits'),
+            const SizedBox(height: 16),
             SettingsTile(
               icon: Icons.speed_rounded,
               title: 'Daily Spending Cap',
@@ -269,7 +267,6 @@ class SettingsScreen extends StatelessWidget {
                 onSave: settings.setMinBalanceThreshold,
               ),
             ),
-            const SettingsSectionHeader(title: 'Warning Thresholds'),
             ThresholdSliderTile(
               icon: Icons.warning_amber_rounded,
               title: 'Warning Level (Yellow)',
@@ -292,14 +289,12 @@ class SettingsScreen extends StatelessWidget {
                 }
               },
             ),
-            const SettingsSectionHeader(title: 'Preferences'),
             SettingsTile(
               icon: Icons.public_rounded,
               title: 'Currency & Country',
               subtitle: '${activeCurrency.flag} ${activeCurrency.country} (${activeCurrency.symbol})',
               onTap: () => _showCurrencyPickerSheet(context, settings),
             ),
-            const SettingsSectionHeader(title: 'Notifications'),
             SettingsTile(
               icon: Icons.notifications_none_rounded,
               title: '30-Minute Reminders',
@@ -318,14 +313,12 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
             ),
-            const SettingsSectionHeader(title: 'Data Management'),
             SettingsTile(
               icon: Icons.restart_alt_rounded,
               title: 'Reset All Data',
               subtitle: 'Clear all transactions & reset settings',
               onTap: () => _showResetConfirmationDialog(context, finance, settings),
             ),
-            const SettingsSectionHeader(title: 'About Estash'),
             SettingsTile(
               icon: Icons.code_rounded,
               title: 'Creator',
