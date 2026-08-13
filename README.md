@@ -1,17 +1,92 @@
-# estash
+# ⚡ Estash — Modern Personal Finance & Budget Tracker
 
-A new Flutter project.
+**Estash** is a sleek, ultra-fast personal finance and daily budget tracking application built with **Flutter**, designed around a custom **Paynx-inspired dark theme** with dynamic color status alerts, fluid micro-animations, and full multi-currency support.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🌟 Key Features
 
-A few resources to get you started if this is your first Flutter project:
+### 🟢 Dynamic Hero Status Card
+- **Automated Color Shifts**: The top main hero header dynamically transitions background and typography colors based on your financial health:
+  - 🟢 **Safe Mode (Vibrant Neon Lime `#B5F520`)**: Active when total balance is positive and daily spending is under 70% of your cap.
+  - 🟡 **Warning Mode (Electric Yellow `#FFD600`)**: Triggers when today's spending reaches 70%–90% of your daily cap.
+  - 🔴 **Danger Mode (Electric Crimson Red `#FF3333`)**: Triggers when spending exceeds 90% of your daily cap OR if your balance becomes negative.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### 🎨 Custom Dark & Slate Steel Aesthetic
+- **Canvas Background**: Deep pitch dark canvas (`#0D0F12`).
+- **Slate Steel Body Cards**: Custom Slate Steel Grey (`#353A40`) surface with elevated charcoal badges (`#26292E`).
+- **Borderless Flat Styling**: Zero drop shadows, zero border strokes, and pure solid color blocks for a clean, modern aesthetic.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 🌍 Global Multi-Currency Support
+- **36 World Currencies**: Built-in support for US Dollar (`USD`), Euro (`EUR`), British Pound (`GBP`), Japanese Yen (`JPY`), Indian Rupee (`INR`), Kuwaiti Dinar (`KWD`), UAE Dirham (`AED`), Saudi Riyal (`SAR`), and 28+ more.
+- **Searchable Currency Picker**: Live search by country name, currency name, code, or symbol in Settings.
+
+### 💸 Streamlined Income & Expense Management
+- **Zero Friction Entry**: Modal entry sheets with quick haptic keypad.
+- **Auto-Category Handling**: Income entries bypass category selection automatically.
+- **Categorized Spending Analytics**: Interactive donut chart & time-series bar charts for daily, weekly, and monthly tracking.
+
+### ✨ Butter-Smooth Animations & Micro-Interactions
+- **Numeric Counter Rolls (`AnimatedCurrencyText`)**: Smoothly animates numbers when total balance or daily spend changes.
+- **Tactile Scale Feedback (`SmoothTapScale`)**: Subtle press scale feedback on cards and buttons.
+- **Staggered Entrance (`StaggeredEntrance`)**: Fade & slide entrance animations for lists and cards.
+- **Animated Tab Switching (`AnimatedSwitcher`)**: Smooth page transitions between Dashboard, Analytics, and Settings.
+
+### 🔔 Notifications & Data Privacy
+- **30-Minute Reminders**: Toggleable local periodic reminders.
+- **Local Persistence**: All transaction and setting data stored locally using Hive & SharedPreferences.
+- **Data Reset**: Full wipe & restore defaults option under Settings.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Flutter 3.x](https://flutter.dev) (Dart)
+- **State Management**: `provider`
+- **Local Storage**: `hive` & `shared_preferences`
+- **Charts**: `fl_chart`
+- **Haptics**: `flutter_vibrate` / `services`
+- **Notifications**: `flutter_local_notifications`
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter SDK (3.x or higher)
+- Dart SDK
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Knecrow/Estash.git
+
+# 2. Navigate to project directory
+cd Estash
+
+# 3. Get dependencies
+flutter pub get
+
+# 4. Run code generation (if modifying Hive adapters)
+dart run build_runner build --delete-conflicting-outputs
+
+# 5. Launch the app
+flutter run -d chrome
+```
+
+---
+
+## 📱 Screenshots & UI Design
+
+- **Canvas**: `#0D0F12`
+- **Hero Green**: `#B5F520`
+- **Card Surface**: `#353A40`
+- **Elevated Surface**: `#26292E`
+- **Danger Red**: `#FF3333`
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
