@@ -163,14 +163,14 @@ class SettingsScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
           ),
           title: Text(
-            'Reset All Data?',
+            'Reset data?',
             style: AppTextStyles.titleLarge.copyWith(
               color: AppColors.dangerAccent,
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
-            'This will permanently delete all transactions and restore settings to default. This action cannot be undone.',
+            'This will permanently delete all transactions and restore settings to default.',
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondary,
               fontSize: 14,
@@ -203,7 +203,7 @@ class SettingsScreen extends StatelessWidget {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('All app data has been reset'),
+                      content: const Text('App data reset complete'),
                       backgroundColor: AppColors.cardSurface,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
@@ -252,21 +252,21 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Unified Single Grouped Settings Card
+            // Unified Settings Group (Clean, Clutter-Free Labels)
             OneUICardContainer(
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
                   SettingsTile(
                     icon: Icons.public_rounded,
-                    title: 'Currency & Country',
-                    subtitle: '${activeCurrency.flag} ${activeCurrency.country} (${activeCurrency.symbol})',
+                    title: 'Currency',
+                    subtitle: '${activeCurrency.flag} ${activeCurrency.country}',
                     onTap: () => _showCurrencyPickerSheet(context, settings),
                   ),
                   divider,
                   SettingsTile(
                     icon: Icons.speed_rounded,
-                    title: 'Daily Spending Cap',
+                    title: 'Daily Cap',
                     subtitle: CurrencyFormatter.format(settings.dailyCap, symbol: settings.currencySymbol),
                     onTap: () => _showNumberInputDialog(
                       context,
@@ -279,11 +279,11 @@ class SettingsScreen extends StatelessWidget {
                   divider,
                   SettingsTile(
                     icon: Icons.account_balance_rounded,
-                    title: 'Min. Balance Alert',
+                    title: 'Alert Limit',
                     subtitle: CurrencyFormatter.format(settings.minBalanceThreshold, symbol: settings.currencySymbol),
                     onTap: () => _showNumberInputDialog(
                       context,
-                      title: 'Minimum Balance',
+                      title: 'Alert Limit',
                       initialValue: settings.minBalanceThreshold,
                       currencySymbol: settings.currencySymbol,
                       onSave: settings.setMinBalanceThreshold,
@@ -292,7 +292,7 @@ class SettingsScreen extends StatelessWidget {
                   divider,
                   ThresholdSliderTile(
                     icon: Icons.warning_amber_rounded,
-                    title: 'Warning Level (Yellow)',
+                    title: 'Warning Level',
                     value: settings.warningThresholdPct,
                     activeColor: AppColors.warningAccent,
                     onChanged: (val) {
@@ -304,7 +304,7 @@ class SettingsScreen extends StatelessWidget {
                   divider,
                   ThresholdSliderTile(
                     icon: Icons.error_outline_rounded,
-                    title: 'Danger Level (Red)',
+                    title: 'Danger Level',
                     value: settings.dangerThresholdPct,
                     activeColor: AppColors.dangerAccent,
                     onChanged: (val) {
@@ -316,8 +316,8 @@ class SettingsScreen extends StatelessWidget {
                   divider,
                   SettingsTile(
                     icon: Icons.notifications_none_rounded,
-                    title: '30-Minute Reminders',
-                    subtitle: settings.remindersEnabled ? 'Enabled' : 'Disabled',
+                    title: 'Reminders',
+                    subtitle: settings.remindersEnabled ? 'On' : 'Off',
                     trailing: Switch(
                       value: settings.remindersEnabled,
                       activeThumbColor: AppColors.actionDark,
@@ -341,21 +341,21 @@ class SettingsScreen extends StatelessWidget {
                   divider,
                   SettingsTile(
                     icon: Icons.open_in_new_rounded,
-                    title: 'GitHub Repository',
-                    subtitle: _githubUrl,
+                    title: 'Repository',
+                    subtitle: 'github.com/Knecrow/Estash',
                     onTap: () => _openGitHub(context),
                   ),
                   divider,
                   SettingsTile(
                     icon: Icons.info_outline_rounded,
-                    title: 'App Version',
-                    subtitle: 'Estash $_appVersion',
+                    title: 'Version',
+                    subtitle: _appVersion,
                   ),
                   divider,
                   SettingsTile(
                     icon: Icons.restart_alt_rounded,
                     title: 'Reset All Data',
-                    subtitle: 'Clear all transactions & reset settings',
+                    subtitle: 'Wipe all records',
                     onTap: () => _showResetConfirmationDialog(context, finance, settings),
                   ),
                 ],

@@ -25,7 +25,7 @@ class SliverOneUIHeader extends StatelessWidget {
     required this.currencySymbol,
     this.remindersEnabled = false,
     this.onToggleReminders,
-    this.expandedHeight = 210.0,
+    this.expandedHeight = 245.0,
   });
 
   @override
@@ -83,29 +83,21 @@ class SliverOneUIHeader extends StatelessWidget {
               bottomRight: Radius.circular(32),
             ),
           ),
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 46.0, bottom: 18.0),
+          // Large One UI header: generous top padding and asymmetric layout
+          padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 56.0, bottom: 20.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Minimal Top Bar
+              // Top Profile & Action row (asymmetric, small and header-anchored)
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CircleAvatar(
-                    radius: 18,
+                    radius: 16,
                     backgroundColor: badgeBgColor,
-                    child: Icon(Icons.person_rounded, size: 20, color: badgeIconColor),
+                    child: Icon(Icons.person_rounded, size: 18, color: badgeIconColor),
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Estash',
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      color: textPrimaryColor,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const Spacer(),
                   InkWell(
                     onTap: () {
                       HapticUtils.light();
@@ -114,8 +106,8 @@ class SliverOneUIHeader extends StatelessWidget {
                     borderRadius: BorderRadius.circular(19),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      width: 38,
-                      height: 38,
+                      width: 34,
+                      height: 34,
                       decoration: BoxDecoration(
                         color: badgeBgColor,
                         shape: BoxShape.circle,
@@ -125,15 +117,25 @@ class SliverOneUIHeader extends StatelessWidget {
                             ? Icons.notifications_active_rounded
                             : Icons.notifications_none_rounded,
                         color: badgeIconColor,
-                        size: 20,
+                        size: 18,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
-
-              // Total Balance Hero Container (Minimal Text)
+              const Spacer(),
+              // Title - Samsung style: Clean, left-aligned, bold, large typography
+              Text(
+                'Estash',
+                style: AppTextStyles.displayMedium.copyWith(
+                  color: textPrimaryColor,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 32,
+                  letterSpacing: -1.0,
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Balance container placed lower for easy one-handed reach
               AnimatedContainer(
                 duration: const Duration(milliseconds: 400),
                 curve: Curves.easeInOutCubic,
@@ -147,7 +149,7 @@ class SliverOneUIHeader extends StatelessWidget {
                   value: netBalance,
                   currencySymbol: currencySymbol,
                   style: AppTextStyles.displayLarge.copyWith(
-                    fontSize: 36,
+                    fontSize: 38,
                     fontWeight: FontWeight.w900,
                     color: textPrimaryColor,
                     letterSpacing: -0.5,
