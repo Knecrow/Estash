@@ -27,19 +27,37 @@ class DailyCapProgressCard extends StatelessWidget {
     final pctText = (progress * 100).toStringAsFixed(0);
 
     return OneUICardContainer(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(18.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(
-                "Today's Spend",
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  AnimatedCurrencyText(
+                    value: todaySpend,
+                    currencySymbol: currencySymbol,
+                    style: AppTextStyles.displayMedium.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                      fontSize: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '/ ${CurrencyFormatter.format(dailyCap, symbol: currencySymbol)}',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
@@ -52,38 +70,17 @@ class DailyCapProgressCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Text(
-                  '$pctText% of Cap',
+                  '$pctText%',
                   style: AppTextStyles.labelSmall.copyWith(
                     color: progressColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              AnimatedCurrencyText(
-                value: todaySpend,
-                currencySymbol: currencySymbol,
-                style: AppTextStyles.displayMedium.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '/ ${CurrencyFormatter.format(dailyCap, symbol: currencySymbol)}',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           NeonProgressBar(
             progress: progress,
             color: progressColor,

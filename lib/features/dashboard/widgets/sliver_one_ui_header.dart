@@ -25,43 +25,33 @@ class SliverOneUIHeader extends StatelessWidget {
     required this.currencySymbol,
     this.remindersEnabled = false,
     this.onToggleReminders,
-    this.expandedHeight = 230.0,
+    this.expandedHeight = 210.0,
   });
 
   @override
   Widget build(BuildContext context) {
     final spendRatio = dailyCap > 0 ? (todaySpend / dailyCap) : 0.0;
     
-    // Danger: Only if total balance is negative OR spending exceeds cap with low/negative net balance
     final isDanger = netBalance < 0 || (dailyCap > 0 && spendRatio >= dangerThresholdPct && netBalance < (dailyCap * 0.25));
-    
-    // Warning: Spending ratio reached warning threshold but net balance is positive
     final isWarning = !isDanger && (dailyCap > 0 && spendRatio >= warningThresholdPct && netBalance >= 0);
 
-    // Dynamic Whole Hero Card Background Colors
     final heroBgColor = isDanger
-        ? AppColors.dangerAccent // Pure Crimson Red
+        ? AppColors.dangerAccent
         : isWarning
-            ? AppColors.warningAccent // Electric Yellow
-            : AppColors.heroBackground; // Vibrant Neon Lime
+            ? AppColors.warningAccent
+            : AppColors.heroBackground;
 
     final heroInnerCardColor = isDanger
-        ? const Color(0xFFFF5959) // Soft Crimson Red
+        ? const Color(0xFFFF5959)
         : isWarning
-            ? const Color(0xFFFFE466) // Soft Yellow
-            : AppColors.heroCardSurface; // Soft Lime
+            ? const Color(0xFFFFE466)
+            : AppColors.heroCardSurface;
 
     final textPrimaryColor = isDanger
-        ? const Color(0xFFFFFFFF) // Crisp White on Red
+        ? const Color(0xFFFFFFFF)
         : isWarning
-            ? const Color(0xFF1E1900) // Deep Dark Charcoal on Yellow
-            : AppColors.textOnLimePrimary; // Pitch Black on Green
-
-    final textSecondaryColor = isDanger
-        ? const Color(0xFFFFD6D6)
-        : isWarning
-            ? const Color(0xFF423800)
-            : AppColors.textOnLimeSecondary;
+            ? const Color(0xFF1E1900)
+            : AppColors.textOnLimePrimary;
 
     final badgeBgColor = isDanger
         ? const Color(0xFF990000)
@@ -93,12 +83,12 @@ class SliverOneUIHeader extends StatelessWidget {
               bottomRight: Radius.circular(32),
             ),
           ),
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 48.0, bottom: 20.0),
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 46.0, bottom: 18.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Bar (Profile + Working Notification Bell Button)
+              // Minimal Top Bar
               Row(
                 children: [
                   CircleAvatar(
@@ -116,7 +106,6 @@ class SliverOneUIHeader extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  // Functional Bell Button
                   InkWell(
                     onTap: () {
                       HapticUtils.light();
@@ -144,7 +133,7 @@ class SliverOneUIHeader extends StatelessWidget {
               ),
               const SizedBox(height: 14),
 
-              // Total Balance Hero Card
+              // Total Balance Hero Container (Minimal Text)
               AnimatedContainer(
                 duration: const Duration(milliseconds: 400),
                 curve: Curves.easeInOutCubic,
@@ -154,31 +143,15 @@ class SliverOneUIHeader extends StatelessWidget {
                   color: heroInnerCardColor,
                   borderRadius: BorderRadius.circular(22),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'TOTAL BALANCE',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: textSecondaryColor,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.8,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    AnimatedCurrencyText(
-                      value: netBalance,
-                      currencySymbol: currencySymbol,
-                      style: AppTextStyles.displayLarge.copyWith(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w900,
-                        color: textPrimaryColor,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ],
+                child: AnimatedCurrencyText(
+                  value: netBalance,
+                  currencySymbol: currencySymbol,
+                  style: AppTextStyles.displayLarge.copyWith(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w900,
+                    color: textPrimaryColor,
+                    letterSpacing: -0.5,
+                  ),
                 ),
               ),
             ],
