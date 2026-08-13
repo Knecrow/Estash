@@ -9,6 +9,7 @@ import '../../providers/settings_provider.dart';
 import '../../shared/widgets/one_ui_card_container.dart';
 import '../../shared/widgets/section_label.dart';
 import 'widgets/category_breakdown_card.dart';
+import 'widgets/spending_radar_chart.dart';
 import 'widgets/time_series_bar_chart.dart';
 
 class AnalyticsScreen extends StatelessWidget {
@@ -39,7 +40,17 @@ class AnalyticsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
 
-            // Category Breakdown Section
+            // Radar Chart Container
+            OneUICardContainer(
+              padding: const EdgeInsets.all(16.0),
+              child: SpendingRadarChart(
+                categoryTotals: totals,
+                currencySymbol: settings.currencySymbol,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Category Breakdown Progress Bars Section
             const SectionLabel(label: 'Categories'),
             OneUICardContainer(
               padding: const EdgeInsets.all(20.0),

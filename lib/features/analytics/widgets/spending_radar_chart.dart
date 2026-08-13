@@ -2,32 +2,77 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../data/models/category.dart';
 
 class SpendingRadarChart extends StatelessWidget {
   final Map<TransactionCategory, double> categoryTotals;
+  final String currencySymbol;
 
   const SpendingRadarChart({
     super.key,
     required this.categoryTotals,
+    required this.currencySymbol,
   });
 
   @override
   Widget build(BuildContext context) {
-    final categories = TransactionCategory.values;
-    final maxSpend = categoryTotals.values.isEmpty
-        ? 1.0
-        : categoryTotals.values.reduce(math.max);
-    final safeMax = maxSpend == 0 ? 1.0 : maxSpend;
+    final totalSpend = categoryTotals.values.fold(0.0, (sum, val) => sum + val);
+
+    if (totalSpend == 0) {
+      return Container(
+        height: 220,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: const BoxDecoration(
+                color: AppColors.cardSurfaceElevated,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.radar_rounded,
+                color: AppColors.textSecondary,
+                size: 26,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'No expense stats yet',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final maxSpend = categoryTotals.values.reduce(math.max);
+    final safeMax = maxSpend <= 0 ? 1.0 : maxSpend;
 
     return AspectRatio(
-      aspectRatio: 1.3,
-      child: CustomPaint(
-        painter: _RadarChartPainter(
-          categories: categories,
-          categoryTotals: categoryTotals,
-          maxSpend: safeMax,
-        ),
+      aspectRatio: 1.25,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        builder: (context, animValue, child) {
+          return CustomPaint(
+            painter: _RadarChartPainter(
+              categories: TransactionCategory.values,
+              categoryTotals: categoryTotals,
+              maxSpend: safeMax,
+              animProgress: animValue,
+              currencySymbol: currencySymbol,
+            ),
+          );
+        },
       ),
     );
   }
@@ -37,49 +82,53 @@ class _RadarChartPainter extends CustomPainter {
   final List<TransactionCategory> categories;
   final Map<TransactionCategory, double> categoryTotals;
   final double maxSpend;
+  final double animProgress;
+  final String currencySymbol;
 
   _RadarChartPainter({
     required this.categories,
     required this.categoryTotals,
     required this.maxSpend,
+    required this.animProgress,
+    required this.currencySymbol,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = math.min(size.width, size.height) / 2.6;
+    final radius = math.min(size.width, size.height) / 2.8;
     final numSides = categories.length;
     final angleStep = (2 * math.pi) / numSides;
 
-    // Paint Grid Circles/Polygons
+    // Grid Concentric Circles & Axis Spokes
     final gridPaint = Paint()
-      ..color = AppColors.cardDivider.withValues(alpha: 0.5)
+      ..color = AppColors.cardDivider.withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
+
+    final axisPaint = Paint()
+      ..color = AppColors.cardDivider.withValues(alpha: 0.25)
+      ..strokeWidth = 1.0;
 
     const gridLevels = 3;
     for (int level = 1; level <= gridLevels; level++) {
       final levelRadius = radius * (level / gridLevels);
-      final path = Path();
+      final gridPath = Path();
       for (int i = 0; i < numSides; i++) {
         final angle = i * angleStep - math.pi / 2;
         final x = center.dx + levelRadius * math.cos(angle);
         final y = center.dy + levelRadius * math.sin(angle);
         if (i == 0) {
-          path.moveTo(x, y);
+          gridPath.moveTo(x, y);
         } else {
-          path.lineTo(x, y);
+          gridPath.lineTo(x, y);
         }
       }
-      path.close();
-      canvas.drawPath(path, gridPaint);
+      gridPath.close();
+      canvas.drawPath(gridPath, gridPaint);
     }
 
-    // Paint Axis Lines
-    final axisPaint = Paint()
-      ..color = AppColors.cardDivider.withValues(alpha: 0.3)
-      ..strokeWidth = 1.0;
-
+    // Spokes
     for (int i = 0; i < numSides; i++) {
       final angle = i * angleStep - math.pi / 2;
       final x = center.dx + radius * math.cos(angle);
@@ -87,21 +136,23 @@ class _RadarChartPainter extends CustomPainter {
       canvas.drawLine(center, Offset(x, y), axisPaint);
     }
 
-    // Data Polygon
+    // Compute Animated Polygon Points
     final dataPath = Path();
-    final points = <Offset>[];
+    final dataPoints = <Offset>[];
 
     for (int i = 0; i < numSides; i++) {
       final cat = categories[i];
       final spend = categoryTotals[cat] ?? 0.0;
-      final ratio = (spend / maxSpend).clamp(0.12, 1.0);
+      final rawRatio = maxSpend > 0 ? (spend / maxSpend) : 0.0;
+      // Smooth minimum radius so polygon vertices are clear
+      final ratio = spend > 0 ? (0.15 + 0.85 * rawRatio) * animProgress : 0.05 * animProgress;
       final pointRadius = radius * ratio;
 
       final angle = i * angleStep - math.pi / 2;
       final x = center.dx + pointRadius * math.cos(angle);
       final y = center.dy + pointRadius * math.sin(angle);
       final pt = Offset(x, y);
-      points.add(pt);
+      dataPoints.add(pt);
 
       if (i == 0) {
         dataPath.moveTo(pt.dx, pt.dy);
@@ -111,50 +162,67 @@ class _RadarChartPainter extends CustomPainter {
     }
     dataPath.close();
 
-    // Fill Polygon
+    // Fill Radar Polygon
     final fillPaint = Paint()
-      ..color = AppColors.safeAccent.withValues(alpha: 0.35)
+      ..color = AppColors.safeAccent.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     canvas.drawPath(dataPath, fillPaint);
 
-    // Stroke Polygon
+    // Stroke Radar Polygon Boundary
     final strokePaint = Paint()
       ..color = AppColors.safeAccent
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5;
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(dataPath, strokePaint);
 
-    // Draw Data Point Circles
-    final pointPaint = Paint()
+    // Draw Data Point Bullets
+    final pointFillPaint = Paint()
       ..color = AppColors.safeAccent
       ..style = PaintingStyle.fill;
 
-    for (final pt in points) {
-      canvas.drawCircle(pt, 4.0, pointPaint);
-    }
-
-    // Draw Category Icons & Labels around Radar
-    const textStyle = TextStyle(
-      color: AppColors.textSecondary,
-      fontSize: 10.5,
-      fontWeight: FontWeight.w700,
-    );
-
-    final textPainter = TextPainter(
-      textDirection: TextDirection.ltr,
-    );
+    final pointBorderPaint = Paint()
+      ..color = AppColors.actionDark
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
 
     for (int i = 0; i < numSides; i++) {
       final cat = categories[i];
+      final spend = categoryTotals[cat] ?? 0.0;
+      if (spend > 0) {
+        final pt = dataPoints[i];
+        canvas.drawCircle(pt, 5.0, pointFillPaint);
+        canvas.drawCircle(pt, 5.0, pointBorderPaint);
+      }
+    }
+
+    // Draw Labels & Values around Spokes
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+    for (int i = 0; i < numSides; i++) {
+      final cat = categories[i];
+      final spend = categoryTotals[cat] ?? 0.0;
       final angle = i * angleStep - math.pi / 2;
-      final labelRadius = radius + 20;
+      final labelRadius = radius + 22;
+
       final lx = center.dx + labelRadius * math.cos(angle);
       final ly = center.dy + labelRadius * math.sin(angle);
 
+      final labelText = spend > 0
+          ? '${cat.label}\n${CurrencyFormatter.format(spend, symbol: currencySymbol)}'
+          : cat.label;
+
       textPainter.text = TextSpan(
-        text: cat.label,
-        style: textStyle,
+        text: labelText,
+        style: TextStyle(
+          color: spend > 0 ? AppColors.textPrimary : AppColors.textSecondary,
+          fontSize: 10.0,
+          fontWeight: spend > 0 ? FontWeight.bold : FontWeight.w500,
+          height: 1.15,
+        ),
       );
+      textPainter.textAlign = TextAlign.center;
       textPainter.layout();
 
       final tx = lx - (textPainter.width / 2);
@@ -166,6 +234,7 @@ class _RadarChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _RadarChartPainter oldDelegate) {
     return oldDelegate.maxSpend != maxSpend ||
+        oldDelegate.animProgress != animProgress ||
         oldDelegate.categoryTotals != categoryTotals;
   }
 }
