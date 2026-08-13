@@ -289,11 +289,13 @@ class _EditTransactionSheetState extends State<EditTransactionSheet> {
               ],
             ),
             const SizedBox(height: 16),
-            HapticKeypad(
-              onKeyPress: _onKeyPress,
-              onDeletePress: _onDeletePress,
-            ),
-            const SizedBox(height: 16),
+            if (MediaQuery.of(context).viewInsets.bottom == 0) ...[
+              HapticKeypad(
+                onKeyPress: _onKeyPress,
+                onDeletePress: _onDeletePress,
+              ),
+              const SizedBox(height: 16),
+            ],
             ElevatedButton(
               onPressed: _amountString == '0' ? null : _update,
               style: ElevatedButton.styleFrom(

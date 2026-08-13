@@ -83,80 +83,82 @@ class SliverOneUIHeader extends StatelessWidget {
               bottomRight: Radius.circular(32),
             ),
           ),
-          // Large One UI header: generous top padding and asymmetric layout
           padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 56.0, bottom: 20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Profile & Action row (asymmetric, small and header-anchored)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CircleAvatar(
-                    radius: 16,
-                    backgroundColor: badgeBgColor,
-                    child: Icon(Icons.person_rounded, size: 18, color: badgeIconColor),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      HapticUtils.light();
-                      if (onToggleReminders != null) onToggleReminders!();
-                    },
-                    borderRadius: BorderRadius.circular(19),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: badgeBgColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        remindersEnabled
-                            ? Icons.notifications_active_rounded
-                            : Icons.notifications_none_rounded,
-                        color: badgeIconColor,
-                        size: 18,
+          // Wrap in SingleChildScrollView to prevent bottom overflow during app bar collapse scrolling
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Profile & Action row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CircleAvatar(
+                      radius: 16,
+                      backgroundColor: badgeBgColor,
+                      child: Icon(Icons.person_rounded, size: 18, color: badgeIconColor),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        HapticUtils.light();
+                        if (onToggleReminders != null) onToggleReminders!();
+                      },
+                      borderRadius: BorderRadius.circular(19),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: badgeBgColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          remindersEnabled
+                              ? Icons.notifications_active_rounded
+                              : Icons.notifications_none_rounded,
+                          color: badgeIconColor,
+                          size: 18,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              // Title - Samsung style: Clean, left-aligned, bold, large typography
-              Text(
-                'Estash',
-                style: AppTextStyles.displayMedium.copyWith(
-                  color: textPrimaryColor,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 32,
-                  letterSpacing: -1.0,
+                  ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              // Balance container placed lower for easy one-handed reach
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeInOutCubic,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                decoration: BoxDecoration(
-                  color: heroInnerCardColor,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: AnimatedCurrencyText(
-                  value: netBalance,
-                  currencySymbol: currencySymbol,
-                  style: AppTextStyles.displayLarge.copyWith(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w900,
+                const SizedBox(height: 16),
+                // Title
+                Text(
+                  'Estash',
+                  style: AppTextStyles.displayMedium.copyWith(
                     color: textPrimaryColor,
-                    letterSpacing: -0.5,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 32,
+                    letterSpacing: -1.0,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+                // Balance container
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOutCubic,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: heroInnerCardColor,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: AnimatedCurrencyText(
+                    value: netBalance,
+                    currencySymbol: currencySymbol,
+                    style: AppTextStyles.displayLarge.copyWith(
+                      fontSize: 38,
+                      fontWeight: FontWeight.w900,
+                      color: textPrimaryColor,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
