@@ -243,6 +243,16 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+
+            // 1. Preferences / Currency (Most frequently accessed)
+            SettingsTile(
+              icon: Icons.public_rounded,
+              title: 'Currency & Country',
+              subtitle: '${activeCurrency.flag} ${activeCurrency.country} (${activeCurrency.symbol})',
+              onTap: () => _showCurrencyPickerSheet(context, settings),
+            ),
+
+            // 2. Budget Limits
             SettingsTile(
               icon: Icons.speed_rounded,
               title: 'Daily Spending Cap',
@@ -267,6 +277,8 @@ class SettingsScreen extends StatelessWidget {
                 onSave: settings.setMinBalanceThreshold,
               ),
             ),
+
+            // 3. Threshold Sliders
             ThresholdSliderTile(
               icon: Icons.warning_amber_rounded,
               title: 'Warning Level (Yellow)',
@@ -289,12 +301,8 @@ class SettingsScreen extends StatelessWidget {
                 }
               },
             ),
-            SettingsTile(
-              icon: Icons.public_rounded,
-              title: 'Currency & Country',
-              subtitle: '${activeCurrency.flag} ${activeCurrency.country} (${activeCurrency.symbol})',
-              onTap: () => _showCurrencyPickerSheet(context, settings),
-            ),
+
+            // 4. Notifications
             SettingsTile(
               icon: Icons.notifications_none_rounded,
               title: '30-Minute Reminders',
@@ -313,12 +321,8 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
             ),
-            SettingsTile(
-              icon: Icons.restart_alt_rounded,
-              title: 'Reset All Data',
-              subtitle: 'Clear all transactions & reset settings',
-              onTap: () => _showResetConfirmationDialog(context, finance, settings),
-            ),
+
+            // 5. About & Developer Info
             SettingsTile(
               icon: Icons.code_rounded,
               title: 'Creator',
@@ -334,6 +338,14 @@ class SettingsScreen extends StatelessWidget {
               icon: Icons.info_outline_rounded,
               title: 'App Version',
               subtitle: 'Estash $_appVersion',
+            ),
+
+            // 6. System / Data Management (Destructive reset safely at the bottom)
+            SettingsTile(
+              icon: Icons.restart_alt_rounded,
+              title: 'Reset All Data',
+              subtitle: 'Clear all transactions & reset settings',
+              onTap: () => _showResetConfirmationDialog(context, finance, settings),
             ),
             const SizedBox(height: 24),
           ],
