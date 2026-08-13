@@ -84,7 +84,6 @@ class SliverOneUIHeader extends StatelessWidget {
             ),
           ),
           padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 56.0, bottom: 20.0),
-          // Wrap in SingleChildScrollView to prevent bottom overflow during app bar collapse scrolling
           child: SingleChildScrollView(
             physics: const NeverScrollableScrollPhysics(),
             child: Column(
@@ -136,24 +135,26 @@ class SliverOneUIHeader extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Balance container
+                // Fully pill-like balance card container
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOutCubic,
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                   decoration: BoxDecoration(
                     color: heroInnerCardColor,
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                  child: AnimatedCurrencyText(
-                    value: netBalance,
-                    currencySymbol: currencySymbol,
-                    style: AppTextStyles.displayLarge.copyWith(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w900,
-                      color: textPrimaryColor,
-                      letterSpacing: -0.5,
+                  child: Center(
+                    child: AnimatedCurrencyText(
+                      value: netBalance,
+                      currencySymbol: currencySymbol,
+                      style: AppTextStyles.displayLarge.copyWith(
+                        fontSize: 38,
+                        fontWeight: FontWeight.w900,
+                        color: textPrimaryColor,
+                        letterSpacing: -0.5,
+                      ),
                     ),
                   ),
                 ),
