@@ -12,6 +12,7 @@ import '../../core/utils/haptic_utils.dart';
 import '../../core/utils/notification_service.dart';
 import '../../providers/finance_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../shared/widgets/one_ui_card_container.dart';
 import 'widgets/settings_tile.dart';
 import 'widgets/threshold_slider_tile.dart';
 
@@ -226,6 +227,13 @@ class SettingsScreen extends StatelessWidget {
     final finance = context.watch<FinanceProvider>();
     final activeCurrency = AppCurrencies.findBySymbol(settings.currencySymbol);
 
+    final divider = Divider(
+      color: AppColors.cardDivider.withValues(alpha: 0.3),
+      height: 1,
+      indent: 16,
+      endIndent: 16,
+    );
+
     return Scaffold(
       backgroundColor: AppColors.canvasBackground,
       body: SafeArea(
@@ -244,108 +252,114 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // 1. Preferences / Currency (Most frequently accessed)
-            SettingsTile(
-              icon: Icons.public_rounded,
-              title: 'Currency & Country',
-              subtitle: '${activeCurrency.flag} ${activeCurrency.country} (${activeCurrency.symbol})',
-              onTap: () => _showCurrencyPickerSheet(context, settings),
-            ),
-
-            // 2. Budget Limits
-            SettingsTile(
-              icon: Icons.speed_rounded,
-              title: 'Daily Spending Cap',
-              subtitle: CurrencyFormatter.format(settings.dailyCap, symbol: settings.currencySymbol),
-              onTap: () => _showNumberInputDialog(
-                context,
-                title: 'Daily Cap',
-                initialValue: settings.dailyCap,
-                currencySymbol: settings.currencySymbol,
-                onSave: settings.setDailyCap,
+            // Unified Single Grouped Settings Card
+            OneUICardContainer(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  SettingsTile(
+                    icon: Icons.public_rounded,
+                    title: 'Currency & Country',
+                    subtitle: '${activeCurrency.flag} ${activeCurrency.country} (${activeCurrency.symbol})',
+                    onTap: () => _showCurrencyPickerSheet(context, settings),
+                  ),
+                  divider,
+                  SettingsTile(
+                    icon: Icons.speed_rounded,
+                    title: 'Daily Spending Cap',
+                    subtitle: CurrencyFormatter.format(settings.dailyCap, symbol: settings.currencySymbol),
+                    onTap: () => _showNumberInputDialog(
+                      context,
+                      title: 'Daily Cap',
+                      initialValue: settings.dailyCap,
+                      currencySymbol: settings.currencySymbol,
+                      onSave: settings.setDailyCap,
+                    ),
+                  ),
+                  divider,
+                  SettingsTile(
+                    icon: Icons.account_balance_rounded,
+                    title: 'Min. Balance Alert',
+                    subtitle: CurrencyFormatter.format(settings.minBalanceThreshold, symbol: settings.currencySymbol),
+                    onTap: () => _showNumberInputDialog(
+                      context,
+                      title: 'Minimum Balance',
+                      initialValue: settings.minBalanceThreshold,
+                      currencySymbol: settings.currencySymbol,
+                      onSave: settings.setMinBalanceThreshold,
+                    ),
+                  ),
+                  divider,
+                  ThresholdSliderTile(
+                    icon: Icons.warning_amber_rounded,
+                    title: 'Warning Level (Yellow)',
+                    value: settings.warningThresholdPct,
+                    activeColor: AppColors.warningAccent,
+                    onChanged: (val) {
+                      if (val < settings.dangerThresholdPct) {
+                        settings.setWarningThresholdPct(val);
+                      }
+                    },
+                  ),
+                  divider,
+                  ThresholdSliderTile(
+                    icon: Icons.error_outline_rounded,
+                    title: 'Danger Level (Red)',
+                    value: settings.dangerThresholdPct,
+                    activeColor: AppColors.dangerAccent,
+                    onChanged: (val) {
+                      if (val > settings.warningThresholdPct) {
+                        settings.setDangerThresholdPct(val);
+                      }
+                    },
+                  ),
+                  divider,
+                  SettingsTile(
+                    icon: Icons.notifications_none_rounded,
+                    title: '30-Minute Reminders',
+                    subtitle: settings.remindersEnabled ? 'Enabled' : 'Disabled',
+                    trailing: Switch(
+                      value: settings.remindersEnabled,
+                      activeThumbColor: AppColors.actionDark,
+                      activeTrackColor: AppColors.safeAccent,
+                      onChanged: (enabled) {
+                        settings.setRemindersEnabled(enabled);
+                        if (enabled) {
+                          NotificationService.schedulePeriodicReminders();
+                        } else {
+                          NotificationService.cancelReminders();
+                        }
+                      },
+                    ),
+                  ),
+                  divider,
+                  SettingsTile(
+                    icon: Icons.code_rounded,
+                    title: 'Creator',
+                    subtitle: _creatorName,
+                  ),
+                  divider,
+                  SettingsTile(
+                    icon: Icons.open_in_new_rounded,
+                    title: 'GitHub Repository',
+                    subtitle: _githubUrl,
+                    onTap: () => _openGitHub(context),
+                  ),
+                  divider,
+                  SettingsTile(
+                    icon: Icons.info_outline_rounded,
+                    title: 'App Version',
+                    subtitle: 'Estash $_appVersion',
+                  ),
+                  divider,
+                  SettingsTile(
+                    icon: Icons.restart_alt_rounded,
+                    title: 'Reset All Data',
+                    subtitle: 'Clear all transactions & reset settings',
+                    onTap: () => _showResetConfirmationDialog(context, finance, settings),
+                  ),
+                ],
               ),
-            ),
-            SettingsTile(
-              icon: Icons.account_balance_rounded,
-              title: 'Min. Balance Alert',
-              subtitle: CurrencyFormatter.format(settings.minBalanceThreshold, symbol: settings.currencySymbol),
-              onTap: () => _showNumberInputDialog(
-                context,
-                title: 'Minimum Balance',
-                initialValue: settings.minBalanceThreshold,
-                currencySymbol: settings.currencySymbol,
-                onSave: settings.setMinBalanceThreshold,
-              ),
-            ),
-
-            // 3. Threshold Sliders
-            ThresholdSliderTile(
-              icon: Icons.warning_amber_rounded,
-              title: 'Warning Level (Yellow)',
-              value: settings.warningThresholdPct,
-              activeColor: AppColors.warningAccent,
-              onChanged: (val) {
-                if (val < settings.dangerThresholdPct) {
-                  settings.setWarningThresholdPct(val);
-                }
-              },
-            ),
-            ThresholdSliderTile(
-              icon: Icons.error_outline_rounded,
-              title: 'Danger Level (Red)',
-              value: settings.dangerThresholdPct,
-              activeColor: AppColors.dangerAccent,
-              onChanged: (val) {
-                if (val > settings.warningThresholdPct) {
-                  settings.setDangerThresholdPct(val);
-                }
-              },
-            ),
-
-            // 4. Notifications
-            SettingsTile(
-              icon: Icons.notifications_none_rounded,
-              title: '30-Minute Reminders',
-              subtitle: settings.remindersEnabled ? 'Enabled' : 'Disabled',
-              trailing: Switch(
-                value: settings.remindersEnabled,
-                activeThumbColor: AppColors.actionDark,
-                activeTrackColor: AppColors.safeAccent,
-                onChanged: (enabled) {
-                  settings.setRemindersEnabled(enabled);
-                  if (enabled) {
-                    NotificationService.schedulePeriodicReminders();
-                  } else {
-                    NotificationService.cancelReminders();
-                  }
-                },
-              ),
-            ),
-
-            // 5. About & Developer Info
-            SettingsTile(
-              icon: Icons.code_rounded,
-              title: 'Creator',
-              subtitle: _creatorName,
-            ),
-            SettingsTile(
-              icon: Icons.open_in_new_rounded,
-              title: 'GitHub Repository',
-              subtitle: _githubUrl,
-              onTap: () => _openGitHub(context),
-            ),
-            SettingsTile(
-              icon: Icons.info_outline_rounded,
-              title: 'App Version',
-              subtitle: 'Estash $_appVersion',
-            ),
-
-            // 6. System / Data Management (Destructive reset safely at the bottom)
-            SettingsTile(
-              icon: Icons.restart_alt_rounded,
-              title: 'Reset All Data',
-              subtitle: 'Clear all transactions & reset settings',
-              onTap: () => _showResetConfirmationDialog(context, finance, settings),
             ),
             const SizedBox(height: 24),
           ],

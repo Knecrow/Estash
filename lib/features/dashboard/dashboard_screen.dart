@@ -155,24 +155,34 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   )
                 else
-                  ...List.generate(recentList.length, (idx) {
-                    final t = recentList[idx];
-                    return StaggeredEntrance(
-                      index: idx + 2,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: TransactionTile(
-                          transaction: t,
-                          currencySymbol: settings.currencySymbol,
-                          onDelete: () {
-                            finance.deleteTransaction(t.id);
-                            _showUndoSnackBar(context, finance);
-                          },
-                          onTap: () => EditTransactionSheet.show(context, t),
-                        ),
+                  StaggeredEntrance(
+                    index: 2,
+                    child: OneUICardContainer(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          for (int i = 0; i < recentList.length; i++) ...[
+                            TransactionTile(
+                              transaction: recentList[i],
+                              currencySymbol: settings.currencySymbol,
+                              onDelete: () {
+                                finance.deleteTransaction(recentList[i].id);
+                                _showUndoSnackBar(context, finance);
+                              },
+                              onTap: () => EditTransactionSheet.show(context, recentList[i]),
+                            ),
+                            if (i < recentList.length - 1)
+                              Divider(
+                                color: AppColors.cardDivider.withValues(alpha: 0.3),
+                                height: 1,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                          ],
+                        ],
                       ),
-                    );
-                  }),
+                    ),
+                  ),
                 const SizedBox(height: 24),
               ]),
             ),
