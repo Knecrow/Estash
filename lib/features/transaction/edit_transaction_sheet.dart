@@ -132,9 +132,12 @@ class _EditTransactionSheetState extends State<EditTransactionSheet> {
   @override
   Widget build(BuildContext context) {
     final currencySymbol = context.watch<SettingsProvider>().currencySymbol;
+    final hasInput = _amountString != '0' && (double.tryParse(_amountString) ?? 0.0) > 0;
     final amountColor = _isExpense ? AppColors.negativeRed : AppColors.safeAccent;
     final btnColor = _isExpense ? AppColors.negativeRed : AppColors.safeAccent;
-    final btnTextColor = _isExpense ? AppColors.textPrimary : AppColors.actionDark;
+    final btnTextColor = hasInput
+        ? (_isExpense ? AppColors.textPrimary : AppColors.actionDark)
+        : AppColors.textPrimary;
 
     return Container(
       decoration: const BoxDecoration(
@@ -297,11 +300,12 @@ class _EditTransactionSheetState extends State<EditTransactionSheet> {
               const SizedBox(height: 16),
             ],
             ElevatedButton(
-              onPressed: _amountString == '0' ? null : _update,
+              onPressed: !hasInput ? null : _update,
               style: ElevatedButton.styleFrom(
                 backgroundColor: btnColor,
                 foregroundColor: btnTextColor,
                 disabledBackgroundColor: AppColors.cardSurfaceElevated,
+                disabledForegroundColor: AppColors.textPrimary.withOpacity(0.5),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -310,7 +314,7 @@ class _EditTransactionSheetState extends State<EditTransactionSheet> {
               child: Text(
                 _isExpense ? 'Update Expense' : 'Update Income',
                 style: AppTextStyles.titleLarge.copyWith(
-                  color: btnTextColor,
+                  color: hasInput ? btnTextColor : AppColors.textPrimary.withOpacity(0.5),
                   fontWeight: FontWeight.bold,
                 ),
               ),

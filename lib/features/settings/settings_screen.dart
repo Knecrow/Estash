@@ -329,6 +329,37 @@ class SettingsScreen extends StatelessWidget {
                         } else {
                           NotificationService.cancelReminders();
                         }
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                Icon(
+                                  enabled
+                                      ? Icons.notifications_active_rounded
+                                      : Icons.notifications_off_rounded,
+                                  color: enabled
+                                      ? AppColors.safeAccent
+                                      : AppColors.textSecondary,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    enabled
+                                        ? '30-Minute Reminders Enabled'
+                                        : '30-Minute Reminders Disabled',
+                                    style: const TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
                       },
                     ),
                   ),

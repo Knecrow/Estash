@@ -35,6 +35,9 @@ abstract class AppTheme {
         ),
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      splashFactory: NoSplash.splashFactory,
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.canvasBackground,
         selectedItemColor: AppColors.safeAccent,
@@ -86,6 +89,18 @@ abstract class AppTheme {
           (states) => states.contains(WidgetState.selected)
               ? AppColors.safeAccent
               : AppColors.cardSurfaceElevated,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.cardSurface,
+        contentTextStyle: const TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
         ),
       ),
     );

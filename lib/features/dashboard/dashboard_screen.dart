@@ -75,11 +75,29 @@ class DashboardScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
-                    newStatus
-                        ? '30-Minute Reminders Enabled'
-                        : '30-Minute Reminders Disabled',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  content: Row(
+                    children: [
+                      Icon(
+                        newStatus
+                            ? Icons.notifications_active_rounded
+                            : Icons.notifications_off_rounded,
+                        color: newStatus ? AppColors.safeAccent : AppColors.textSecondary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          newStatus
+                              ? '30-Minute Reminders Enabled'
+                              : '30-Minute Reminders Disabled',
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   backgroundColor: AppColors.cardSurface,
                   behavior: SnackBarBehavior.floating,
