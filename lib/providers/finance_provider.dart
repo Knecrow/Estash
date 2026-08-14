@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../data/models/category.dart';
 import '../data/models/transaction.dart';
 import '../data/repositories/transaction_repository.dart';
-import '../features/widget/home_widget_manager.dart';
 import 'settings_provider.dart';
 
 class FinanceProvider extends ChangeNotifier {
@@ -121,11 +120,15 @@ class FinanceProvider extends ChangeNotifier {
   Future<void> loadTransactions() async {
     _isLoading = true;
     notifyListeners();
-    _transactions = _repo.getAll();
-    _sortTransactions();
-    _isLoading = false;
-    notifyListeners();
-    _syncWidgetData();
+    try {
+      _transactions = _repo.getAll();
+      _sortTransactions();
+    } catch (_) {
+      _transactions = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> addTransaction(Transaction t) async {
@@ -133,7 +136,6 @@ class FinanceProvider extends ChangeNotifier {
     _transactions.add(t);
     _sortTransactions();
     notifyListeners();
-    _syncWidgetData();
   }
 
   Future<void> updateTransaction(Transaction t) async {
@@ -144,7 +146,6 @@ class FinanceProvider extends ChangeNotifier {
     }
     _sortTransactions();
     notifyListeners();
-    _syncWidgetData();
   }
 
   Future<void> deleteTransaction(String id) async {
@@ -154,7 +155,6 @@ class FinanceProvider extends ChangeNotifier {
       _transactions.removeAt(idx);
       await _repo.delete(id);
       notifyListeners();
-      _syncWidgetData();
     }
   }
 
@@ -171,18 +171,9 @@ class FinanceProvider extends ChangeNotifier {
     _transactions.clear();
     _lastDeleted = null;
     notifyListeners();
-    _syncWidgetData();
   }
 
   void _sortTransactions() {
     _transactions.sort((a, b) => b.date.compareTo(a.date));
-  }
-
-  void _syncWidgetData() {
-    HomeWidgetManager.updateWidgetData(
-      netBalance: netBalance,
-      todaySpend: todaySpend,
-      currencySymbol: _settingsProvider?.currencySymbol ?? '\$',
-    );
   }
 }

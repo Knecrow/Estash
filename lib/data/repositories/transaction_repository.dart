@@ -4,25 +4,42 @@ import '../models/transaction.dart';
 class TransactionRepository {
   static const String boxName = 'transactions';
 
-  Box<Transaction> get _box => Hive.box<Transaction>(boxName);
+  Box<Transaction>? get _box {
+    if (Hive.isBoxOpen(boxName)) {
+      return Hive.box<Transaction>(boxName);
+    }
+    return null;
+  }
 
   List<Transaction> getAll() {
-    return _box.values.toList();
+    try {
+      return _box?.values.toList() ?? [];
+    } catch (_) {
+      return [];
+    }
   }
 
   Future<void> add(Transaction transaction) async {
-    await _box.put(transaction.id, transaction);
+    try {
+      await _box?.put(transaction.id, transaction);
+    } catch (_) {}
   }
 
   Future<void> update(Transaction transaction) async {
-    await _box.put(transaction.id, transaction);
+    try {
+      await _box?.put(transaction.id, transaction);
+    } catch (_) {}
   }
 
   Future<void> delete(String id) async {
-    await _box.delete(id);
+    try {
+      await _box?.delete(id);
+    } catch (_) {}
   }
 
   Future<void> clearAll() async {
-    await _box.clear();
+    try {
+      await _box?.clear();
+    } catch (_) {}
   }
 }

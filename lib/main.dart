@@ -14,13 +14,33 @@ import 'providers/settings_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-  Hive.registerAdapter(TransactionCategoryAdapter());
-  Hive.registerAdapter(TransactionAdapter());
+  try {
+    await Hive.initFlutter();
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(TransactionCategoryAdapter());
+    }
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(TransactionAdapter());
+    }
 
-  await Hive.openBox<Transaction>(TransactionRepository.boxName);
+    if (!Hive.isBoxOpen(TransactionRepository.boxName)) {
+      try {
+        await Hive.openBox<Transaction>(TransactionRepository.boxName);
+      } catch (boxError) {
+        // If box is corrupted or locked from an earlier installation, recreate cleanly
+        await Hive.deleteBoxFromDisk(TransactionRepository.boxName);
+        await Hive.openBox<Transaction>(TransactionRepository.boxName);
+      }
+    }
+  } catch (e, st) {
+    debugPrint('Hive init error: $e\n$st');
+  }
 
-  await NotificationService.initialize();
+  try {
+    await NotificationService.initialize();
+  } catch (e, st) {
+    debugPrint('NotificationService init error: $e\n$st');
+  }
 
   final settingsRepo = SettingsRepository();
   final transactionRepo = TransactionRepository();
