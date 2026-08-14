@@ -27,64 +27,70 @@ class DailyCapProgressCard extends StatelessWidget {
     final pctText = (progress * 100).toStringAsFixed(0);
 
     return OneUICardContainer(
-      padding: const EdgeInsets.all(18.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
+                  Text(
+                    'Daily Cap  ',
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
                   AnimatedCurrencyText(
                     value: todaySpend,
                     currencySymbol: currencySymbol,
-                    style: AppTextStyles.displayMedium.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
-                      fontSize: 22,
+                      fontSize: 15,
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                   Text(
                     '/ ${CurrencyFormatter.format(dailyCap, symbol: currencySymbol)}',
-                    style: AppTextStyles.bodyMedium.copyWith(
+                    style: const TextStyle(
                       color: AppColors.textSecondary,
-                      fontSize: 13,
+                      fontSize: 12,
                     ),
                   ),
                 ],
               ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+              Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10.0,
-                  vertical: 4.0,
+                  horizontal: 8.0,
+                  vertical: 2.0,
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.cardSurfaceElevated,
-                  borderRadius: BorderRadius.circular(12.0),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
                   '$pctText%',
                   style: AppTextStyles.labelSmall.copyWith(
                     color: progressColor,
                     fontWeight: FontWeight.w900,
-                    fontSize: 12,
+                    fontSize: 11,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           NeonProgressBar(
             progress: progress,
             color: progressColor,
-            height: 10,
+            height: 5,
           ),
         ],
       ),

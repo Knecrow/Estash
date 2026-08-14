@@ -14,9 +14,9 @@ import '../../shared/widgets/transaction_tile.dart';
 import '../transaction/add_transaction_sheet.dart';
 import '../transaction/edit_transaction_sheet.dart';
 import 'widgets/daily_cap_progress_card.dart';
+import 'widgets/dashboard_hero_header.dart';
 import 'widgets/min_balance_alert_banner.dart';
 import 'widgets/quick_add_fab_row.dart';
-import 'widgets/sliver_one_ui_header.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -48,15 +48,16 @@ class DashboardScreen extends StatelessWidget {
     final finance = context.watch<FinanceProvider>();
     final settings = context.watch<SettingsProvider>();
 
-    final recentList = finance.recentTransactions;
+    final transactions = finance.allTransactions;
     final progress = settings.capProgress(finance.todaySpend);
     final progressColor = settings.capProgressColor(progress);
 
     return Scaffold(
       backgroundColor: AppColors.canvasBackground,
-      body: CustomScrollView(
-        slivers: [
-          SliverOneUIHeader(
+      body: Column(
+        children: [
+          // ── Fixed / Pinned Top Header ─────────────────────────
+          DashboardHeroHeader(
             netBalance: finance.netBalance,
             todaySpend: finance.todaySpend,
             dailyCap: settings.dailyCap,
@@ -108,13 +109,16 @@ class DashboardScreen extends StatelessWidget {
               );
             },
           ),
-          SliverPadding(
+
+          // ── Fixed Overview Cards (Alert & Daily Cap) ─────────
+          Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppConstants.pagePadding,
-              vertical: 12,
+              vertical: 4,
             ),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 MinBalanceAlertBanner(
                   netBalance: finance.netBalance,
                   threshold: settings.minBalanceThreshold,
@@ -130,88 +134,106 @@ class DashboardScreen extends StatelessWidget {
                     currencySymbol: settings.currencySymbol,
                   ),
                 ),
+                const SizedBox(height: 6),
                 const StaggeredEntrance(
                   index: 1,
                   child: SectionLabel(label: 'Transactions'),
                 ),
-                if (recentList.isEmpty)
-                  StaggeredEntrance(
-                    index: 2,
-                    child: OneUICardContainer(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 56,
-                            height: 56,
-                            decoration: const BoxDecoration(
-                              color: AppColors.cardSurfaceElevated,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.receipt_long_rounded,
-                              size: 28,
-                              color: AppColors.safeAccent,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No transactions yet',
-                            style: AppTextStyles.titleLarge.copyWith(
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Tap Income or Expense to get started',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                else
-                  StaggeredEntrance(
-                    index: 2,
-                    child: OneUICardContainer(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        children: [
-                          for (int i = 0; i < recentList.length; i++) ...[
-                            TransactionTile(
-                              transaction: recentList[i],
-                              currencySymbol: settings.currencySymbol,
-                              onDelete: () {
-                                finance.deleteTransaction(recentList[i].id);
-                                _showUndoSnackBar(context, finance);
-                              },
-                              onTap: () => EditTransactionSheet.show(context, recentList[i]),
-                            ),
-                            if (i < recentList.length - 1)
-                              Divider(
-                                color: AppColors.cardDivider.withValues(alpha: 0.3),
-                                height: 1,
-                                indent: 16,
-                                endIndent: 16,
-                              ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 24),
-              ]),
+              ],
             ),
           ),
+
+          // ── Scrollable Transactions Area ─────────────────────
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.pagePadding,
+              ),
+              child: transactions.isEmpty
+                  ? SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: StaggeredEntrance(
+                        index: 2,
+                        child: OneUICardContainer(
+                          padding: const EdgeInsets.all(28.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.cardSurfaceElevated,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.receipt_long_rounded,
+                                  size: 24,
+                                  color: AppColors.safeAccent,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'No transactions yet',
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Tap Income or Expense to get started',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  : StaggeredEntrance(
+                      index: 2,
+                      child: ClipRRect(
+                        borderRadius: AppConstants.squircleRadius,
+                        child: OneUICardContainer(
+                          padding: EdgeInsets.zero,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: transactions.length,
+                            separatorBuilder: (_, __) => Divider(
+                              color: AppColors.cardDivider.withValues(alpha: 0.3),
+                              height: 1,
+                              indent: 16,
+                              endIndent: 16,
+                            ),
+                            itemBuilder: (context, i) {
+                              return TransactionTile(
+                                transaction: transactions[i],
+                                currencySymbol: settings.currencySymbol,
+                                onDelete: () {
+                                  finance.deleteTransaction(transactions[i].id);
+                                  _showUndoSnackBar(context, finance);
+                                },
+                                onTap: () => EditTransactionSheet.show(
+                                  context,
+                                  transactions[i],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 6),
         ],
       ),
       bottomNavigationBar: Container(
         color: AppColors.canvasBackground,
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
             child: QuickAddFabRow(
               onAddIncome: () => AddTransactionSheet.show(context, isExpense: false),
               onAddExpense: () => AddTransactionSheet.show(context, isExpense: true),
