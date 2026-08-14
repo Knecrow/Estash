@@ -48,10 +48,11 @@ class AnalyticsScreen extends StatelessWidget {
                 currencySymbol: settings.currencySymbol,
               ),
             ),
-            const SizedBox(height: 16),
-
             // Category Breakdown Progress Bars Section
-            const SectionLabel(label: 'Categories'),
+            const SectionLabel(
+              label: 'Categories',
+              padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 12.0, bottom: 8.0),
+            ),
             OneUICardContainer(
               padding: const EdgeInsets.all(20.0),
               child: CategoryBreakdownCard(
@@ -59,10 +60,12 @@ class AnalyticsScreen extends StatelessWidget {
                 currencySymbol: settings.currencySymbol,
               ),
             ),
-            const SizedBox(height: 16),
 
             // Time-Series Bar Chart Section
-            const SectionLabel(label: 'Trends'),
+            const SectionLabel(
+              label: 'Trends',
+              padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 12.0, bottom: 8.0),
+            ),
             OneUICardContainer(
               padding: const EdgeInsets.all(20.0),
               child: TimeSeriesBarChart(
@@ -72,7 +75,7 @@ class AnalyticsScreen extends StatelessWidget {
                 currencySymbol: settings.currencySymbol,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
           ],
         ),
       ),

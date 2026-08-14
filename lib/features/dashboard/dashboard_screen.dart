@@ -110,11 +110,13 @@ class DashboardScreen extends StatelessWidget {
             },
           ),
 
-          // ── Fixed Overview Cards (Alert & Daily Cap) ─────────
+          // ── Fixed Overview (Daily Cap Badge & Section Label) ───
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppConstants.pagePadding,
-              vertical: 4,
+            padding: const EdgeInsets.only(
+              left: AppConstants.pagePadding,
+              right: AppConstants.pagePadding,
+              top: 8,
+              bottom: 4,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,20 +126,16 @@ class DashboardScreen extends StatelessWidget {
                   threshold: settings.minBalanceThreshold,
                   currencySymbol: settings.currencySymbol,
                 ),
-                StaggeredEntrance(
-                  index: 0,
-                  child: DailyCapProgressCard(
-                    todaySpend: finance.todaySpend,
-                    dailyCap: settings.dailyCap,
-                    progress: progress,
-                    progressColor: progressColor,
-                    currencySymbol: settings.currencySymbol,
-                  ),
+                DailyCapProgressCard(
+                  todaySpend: finance.todaySpend,
+                  dailyCap: settings.dailyCap,
+                  progress: progress,
+                  progressColor: progressColor,
+                  currencySymbol: settings.currencySymbol,
                 ),
-                const SizedBox(height: 6),
-                const StaggeredEntrance(
-                  index: 1,
-                  child: SectionLabel(label: 'Transactions'),
+                const SectionLabel(
+                  label: 'Transactions',
+                  padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 8.0, bottom: 6.0),
                 ),
               ],
             ),

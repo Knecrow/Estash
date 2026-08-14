@@ -26,71 +26,77 @@ class DailyCapProgressCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final pctText = (progress * 100).toStringAsFixed(0);
 
-    return OneUICardContainer(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(
+          color: AppColors.cardDivider.withValues(alpha: 0.25),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    'Daily Cap  ',
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
-                  ),
-                  AnimatedCurrencyText(
-                    value: todaySpend,
-                    currencySymbol: currencySymbol,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                      fontSize: 15,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '/ ${CurrencyFormatter.format(dailyCap, symbol: currencySymbol)}',
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 2.0,
-                ),
+                padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                  color: AppColors.cardSurfaceElevated,
-                  borderRadius: BorderRadius.circular(8.0),
+                  color: progressColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
                 ),
-                child: Text(
-                  '$pctText%',
-                  style: AppTextStyles.labelSmall.copyWith(
-                    color: progressColor,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 11,
-                  ),
+                child: Icon(
+                  Icons.data_usage_rounded,
+                  size: 14,
+                  color: progressColor,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Today: ',
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+              AnimatedCurrencyText(
+                value: todaySpend,
+                currencySymbol: currencySymbol,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                ' / ${CurrencyFormatter.format(dailyCap, symbol: currencySymbol)}',
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          NeonProgressBar(
-            progress: progress,
-            color: progressColor,
-            height: 5,
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8.0,
+              vertical: 2.0,
+            ),
+            decoration: BoxDecoration(
+              color: progressColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Text(
+              '$pctText%',
+              style: TextStyle(
+                color: progressColor,
+                fontWeight: FontWeight.w900,
+                fontSize: 11,
+              ),
+            ),
           ),
         ],
       ),
