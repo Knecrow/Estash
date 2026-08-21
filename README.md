@@ -1,6 +1,20 @@
-# ⚡ Estash — Modern Personal Finance & Budget Tracker
+<div align="center">
 
-**Estash** is a sleek, ultra-fast personal finance and daily budget tracking application built with **Flutter**, designed around a custom **Paynx-inspired dark theme** with dynamic color status alerts, fluid micro-animations, and full multi-currency support.
+![Estash Banner](assets/banner.jpg)
+
+# ⚡ Estash
+### Modern Personal Finance & Daily Budget Tracker
+
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web-green?style=for-the-badge)](https://flutter.dev)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+<p align="center">
+  A sleek, ultra-fast personal finance and daily budget tracking application built with Flutter, designed around a custom Paynx-inspired dark theme with dynamic status alerts, fluid micro-animations, and full multi-currency support.
+</p>
+
+</div>
 
 ---
 
@@ -72,18 +86,8 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 
 # 5. Launch the app
-flutter run -d chrome
+flutter run
 ```
-
----
-
-## 📱 Screenshots & UI Design
-
-- **Canvas**: `#0D0F12`
-- **Hero Green**: `#B5F520`
-- **Card Surface**: `#353A40`
-- **Elevated Surface**: `#26292E`
-- **Danger Red**: `#FF3333`
 
 ---
 
